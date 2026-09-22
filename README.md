@@ -141,7 +141,12 @@ Este proyecto hace parte del ejercicio de práctica profesional en ingeniería d
 
 ## 📬 Contacto
 
-Para soporte o consultas técnicas, contactar a **Esneyder Jesús Ibarra Rosero** al correo institucional o al área de sistemas del Hospital Universitario Departamental de Nariño.
+Para soporte o consultas técnicas, contactar a **Esneyder Jesús Ibarra Rosero**:
+
+- **Teléfono:** +57 323 215 7962
+- **Correo:** esneydribarra1970@gmail.com
+- **LinkedIn:** [esneyder-ibarra-rosero](https://www.linkedin.com/in/esneyder-ibarra-rosero)
+- **GitHub:** [printEsneydr](https://github.com/printEsneydr)
 
 ---
 
