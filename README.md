@@ -4,7 +4,7 @@ Aplicación móvil y web desarrollada en Flutter para la **Unidad de Cuidados In
 
 ---
 
-## 🩺 Descripción del proyecto
+##  Descripción del proyecto
 
 Esta aplicación permite **registrar, consultar, firmar y exportar** todos los datos clínicos de los pacientes en tiempo real. Fue validada directamente con el personal de enfermería de la UCI del HUDN y cumple con el flujo de trabajo real de los turnos de **mañana, tarde y noche**.
 
@@ -20,7 +20,7 @@ Esta aplicación permite **registrar, consultar, firmar y exportar** todos los d
 
 ---
 
-## ✨ Funcionalidades principales
+##  Funcionalidades principales
 
 Todos los módulos están completamente implementados:
 
@@ -43,7 +43,7 @@ Todos los módulos están completamente implementados:
 
 ---
 
-## 👥 Roles de usuario
+##  Roles de usuario
 
 La aplicación maneja cinco roles con diferentes niveles de acceso:
 
@@ -57,7 +57,7 @@ El rol de cada usuario se lee desde la colección `roles` de Firestore al inicia
 
 ---
 
-## 🏗️ Estructura del proyecto
+##  Estructura del proyecto
 
 El código sigue **Clean Architecture** con cuatro capas bien diferenciadas. Cada funcionalidad principal tiene su propio módulo dentro de la carpeta `features`:
 
@@ -82,7 +82,7 @@ lib/
 
 ---
 
-## 🚀 Instalación y configuración
+##  Instalación y configuración
 
 ### Requisitos previos
 
@@ -123,13 +123,13 @@ firebase deploy --only hosting
 
 ---
 
-## 🧑‍💻 Estado del proyecto
+##  Estado del proyecto
 
 La aplicación se encuentra **completamente funcional**, con todos los módulos implementados y validados con el personal de la UCI del Hospital Universitario Departamental de Nariño. Incluye más de 4500 líneas de código, 10 pantallas principales, 18 módulos funcionales y documentación técnica (manual de usuario y guía de migración de Firebase).
 
 ---
 
-## 📄 Créditos
+##  Créditos
 
 - **Autor principal: Esneyder Jesús Ibarra Rosero** — Ingeniero de Sistemas (práctica profesional). Responsable del desarrollo, integración con Firebase y generación de reportes PDF.
 - **Carlos Botina** — Universidad Mariana (colaborador inicial).
@@ -139,7 +139,7 @@ Este proyecto hace parte del ejercicio de práctica profesional en ingeniería d
 
 ---
 
-## 📬 Contacto
+##  Contacto
 
 Para soporte o consultas técnicas, contactar a **Esneyder Jesús Ibarra Rosero**:
 
@@ -150,6 +150,6 @@ Para soporte o consultas técnicas, contactar a **Esneyder Jesús Ibarra Rosero*
 
 ---
 
-## ☁️ Migración de Firebase
+##  Migración de Firebase
 
 Si necesitas migrar la base de datos a un nuevo proyecto de Firebase (cambiar de cuenta, hospital o entorno), consulta el documento incluido: **"README - Migración Firebase"**. Explica paso a paso cómo crear el proyecto, configurar Firestore, crear los usuarios con roles y conectar la aplicación.
