@@ -94,7 +94,7 @@ lib/
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/<usuario>/sabana-digital-enfermeria-uci.git
+git clone https://github.com/printEsneydr/sabana-digital-enfermeria-uci.git
 cd sabana-digital-enfermeria-uci
 
 # 2. Instalar las dependencias
