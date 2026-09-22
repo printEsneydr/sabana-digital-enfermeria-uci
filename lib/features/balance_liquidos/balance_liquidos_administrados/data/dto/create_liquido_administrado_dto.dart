@@ -1,0 +1,34 @@
+// ================================================================================
+// SÁBANA DIGITAL DE ENFERMERÍA - UCI
+// Hospital Universitario Departamental de Nariño (HUDN)
+// Desarrollado por: Esneyder Jesús Ibarra Rosero
+// Ingeniero de Sistemas - Práctica profesional
+// ================================================================================
+
+import 'dart:collection';
+
+// dto para crear un liquido administrado, extiende MapView para ser usado como mapa
+class CreateLiquidoAdministradoDto extends MapView<String, dynamic> {
+  final String medicamento;
+  final int cantidad;
+  final String? comentario;
+  final String? dosis;
+  final DateTime hora;
+  final bool esTratamiento;
+
+  CreateLiquidoAdministradoDto({
+    required this.medicamento,
+    required this.cantidad,
+    this.comentario,
+    this.dosis,
+    required this.hora,
+    required this.esTratamiento,
+  }) : super({
+          'medicamento': medicamento,
+          'cantidad': cantidad,
+          if (comentario != null) 'comentario': comentario,
+          if (dosis != null) 'dosis': dosis,
+          'hora': hora,
+          'esTratamiento': esTratamiento,
+        });
+}

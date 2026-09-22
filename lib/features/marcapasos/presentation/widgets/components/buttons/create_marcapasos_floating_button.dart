@@ -1,0 +1,34 @@
+// ================================================================================
+// SÁBANA DIGITAL DE ENFERMERÍA - UCI
+// Hospital Universitario Departamental de Nariño (HUDN)
+// Desarrollado por: Esneyder Jesús Ibarra Rosero
+// Ingeniero de Sistemas - Práctica profesional
+// ================================================================================
+
+import 'package:flutter/material.dart';
+import '../../../../../../pages/marcapasos/create_marcapaso_page.dart';
+
+// boton flotante que navega a la pagina de creacion de marcapaso
+class CreateMarcapasosFloatingButton extends StatelessWidget {
+  final String idIngreso; // Recibe el ID del ingreso
+
+  const CreateMarcapasosFloatingButton({
+    super.key,
+    required this.idIngreso, // Aseguramos que se pase el ID al constructor
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton(
+      backgroundColor: Colors.green, // 🔥 Ahora es rojo para ser consistente
+      onPressed: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) {
+            return CreateMarcapasoPage(idIngreso: idIngreso);
+          },
+        ));
+      },
+      child: const Icon(Icons.add),
+    );
+  }
+}

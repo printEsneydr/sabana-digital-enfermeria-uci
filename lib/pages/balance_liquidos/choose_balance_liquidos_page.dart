@@ -1,0 +1,143 @@
+// ================================================================================
+// SÁBANA DIGITAL DE ENFERMERÍA - UCI
+// Hospital Universitario Departamental de Nariño (HUDN)
+// Desarrollado por: Esneyder Jesús Ibarra Rosero
+// Ingeniero de Sistemas - Práctica profesional
+// ================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:registro_uci/features/balance_liquidos/balance_liquidos_administrados/data/providers/liquidos_administrados_provider.dart';
+import 'package:registro_uci/features/balance_liquidos/balance_liquidos_eliminados/data/providers/liquidos_eliminados_provider.dart';
+import 'package:registro_uci/features/balance_liquidos/data/providers/balances_de_liquidos_provider.dart';
+import 'package:registro_uci/features/balance_liquidos/domain/models/balance_de_liquidos.dart';
+import 'package:registro_uci/pages/balance_liquidos/liquidos_administrados_screen.dart';
+import 'package:registro_uci/pages/balance_liquidos/liquidos_eliminados_screen.dart';
+
+// pagina que permite elegir entre liquidos administrados o eliminados para un balance
+class ChooseBalanceLiquidosPage extends StatelessWidget {
+  // parametros del balance (id de ingreso, registro diario)
+  final BalancesDeLiquidosParams params;
+  // el balance de liquidos seleccionado
+  final BalanceDeLiquidos balance;
+
+  // constructor requiere los parametros y el balance
+  const ChooseBalanceLiquidosPage(
+      {super.key, required this.params, required this.balance});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Gestión de Líquidos"),
+      ),
+      backgroundColor: const Color(0xFFF7F9FC), // Light background color
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          // mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // "Líquidos Administrados" Button
+            OptionButton(
+              title: "Líquidos Administrados",
+              icon: Icons.local_drink_outlined,
+              color: const Color(0xFF4A90E2), // Blue color
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LiquidosAdministradosScreen(
+                      params: LiquidosAdministradosParams(
+                        idIngreso: params.idIngreso,
+                        idRegistroDiario: params.idRegistroDiario,
+                        idBalanceLiquidos: balance.idBalanceDeLiquidos,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 30),
+            // "Líquidos Eliminados" Button
+            OptionButton(
+              title: "Líquidos Eliminados",
+              icon: Icons.delete_outline,
+              color: const Color(0xFF6ABF69), // Soft green color
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LiquidosEliminadosScreen(
+                      params: LiquidosEliminadosParams(
+                        idIngreso: params.idIngreso,
+                        idRegistroDiario: params.idRegistroDiario,
+                        idBalanceLiquidos: balance.idBalanceDeLiquidos,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// boton personalizado con icono y titulo para las opciones de liquidos
+class OptionButton extends StatelessWidget {
+  // texto del boton
+  final String title;
+  // icono del boton
+  final IconData icon;
+  // color del boton
+  final Color color;
+  // funcion al presionar el boton
+  final VoidCallback onPressed;
+
+  // constructor del boton de opcion
+  const OptionButton({
+    super.key,
+    required this.title,
+    required this.icon,
+    required this.color,
+    required this.onPressed,
+  });
+
+  // construye el boton con icono dentro de un circulo y texto
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      elevation: 5,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+          child: Row(
+            children: [
+              // icono dentro de un circulo con color de fondo suave
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: color.withOpacity(0.1),
+                child: Icon(icon, color: color, size: 30),
+              ),
+              const SizedBox(width: 20),
+              // Title Text
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 18,
+                  color: color,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

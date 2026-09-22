@@ -1,0 +1,56 @@
+// ================================================================================
+// SÁBANA DIGITAL DE ENFERMERÍA - UCI
+// Hospital Universitario Departamental de Nariño (HUDN)
+// Desarrollado por: Esneyder Jesús Ibarra Rosero
+// Ingeniero de Sistemas - Práctica profesional
+// ================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:registro_uci/common/components/buttons/primary_button.dart';
+import 'package:registro_uci/common/components/buttons/secondary_button.dart';
+import 'package:registro_uci/features/auth/presentation/controllers/auth_controller.dart';
+
+// boton de icono para cerrar sesion con confirmacion
+class LogoutIconButton extends ConsumerWidget {
+  const LogoutIconButton({
+    super.key,
+  });
+
+
+  // construye un iconbutton que muestra un dialogo de confirmacion
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return IconButton(
+      icon: const Icon(Icons.logout),
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text(
+              "¿Cerrar sesión?",
+            ),
+            actions: [
+              SecondaryButton(
+                child: const Text("Cancelar"),
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              PrimaryButton(
+                child: const Text(
+                  "Aceptar",
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  ref.read(authControllerProvider.notifier).logout();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}

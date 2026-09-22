@@ -1,0 +1,40 @@
+// ================================================================================
+// SÁBANA DIGITAL DE ENFERMERÍA - UCI
+// Hospital Universitario Departamental de Nariño (HUDN)
+// Desarrollado por: Esneyder Jesús Ibarra Rosero
+// Ingeniero de Sistemas - Práctica profesional
+// ================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:registro_uci/common/components/tile.dart';
+import 'package:registro_uci/pages/tratamiento_antibioticos/dia_tratamiento_antibiotico_page.dart';
+
+// tile que navega a la pagina de dias de tratamiento antibiotico
+class DiasTratamientoAntibioticoTile extends StatelessWidget {
+  final String idIngreso;
+  final String idTratamientoAntibiotico;
+
+  const DiasTratamientoAntibioticoTile({
+    super.key,
+    required this.idIngreso,
+    required this.idTratamientoAntibiotico,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Tile(
+      title: 'Días de tratamiento antibiótico',
+      subtitle: 'Dosis administradas',
+      iconData: Icons.water_drop_outlined,
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) {
+            return DiasTratamientoAntibioticoPage(
+                idIngreso: idIngreso,
+                idTratamientoAntibiotico: idTratamientoAntibiotico);
+          },
+        ));
+      },
+    );
+  }
+}

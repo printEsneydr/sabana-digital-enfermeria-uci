@@ -1,0 +1,62 @@
+// ================================================================================
+// SÁBANA DIGITAL DE ENFERMERÍA - UCI
+// Hospital Universitario Departamental de Nariño (HUDN)
+// Desarrollado por: Esneyder Jesús Ibarra Rosero
+// Ingeniero de Sistemas - Práctica profesional
+// ================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:registro_uci/constants/intervenciones.dart';
+import 'package:registro_uci/features/intervenciones/domain/models/intervencion.dart';
+import 'package:registro_uci/features/resultados/domain/models/resultado.dart';
+import 'package:registro_uci/pages/resultados/resultado_page.dart';
+
+// pagina que lista los resultados NOC asociados a una intervencion NIC
+class ResultadosDeIntervencionPage extends StatelessWidget {
+  // intervencion de la que se mostraran los resultados
+  final Intervencion intervencion;
+  // constructor, requiere la intervencion
+  const ResultadosDeIntervencionPage({super.key, required this.intervencion});
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Resultado>? resultados =
+        resultadosDeIntervencion[intervencion.idNIC];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Resultados de ${intervencion.nombre}"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: resultados == null
+            ? const Text('No hay resultados disponibles.')
+            : ListView.builder(
+                itemCount: resultados.length,
+                itemBuilder: (context, index) {
+                  final resultado = resultados[index];
+                  return Card(
+                    elevation: 3,
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    child: ListTile(
+                      leading: const Icon(Icons.insights, color: Colors.blue),
+                      title: Text(resultado.nombre),
+                      subtitle: Text("NOC: ${resultado.idNOC}"),
+                      trailing: const Icon(Icons.arrow_forward_ios),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ResultadoPage(resultado: resultado),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+      ),
+    );
+  }
+}

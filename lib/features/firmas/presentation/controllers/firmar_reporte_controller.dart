@@ -1,0 +1,44 @@
+// ================================================================================
+// SÁBANA DIGITAL DE ENFERMERÍA - UCI
+// Hospital Universitario Departamental de Nariño (HUDN)
+// Desarrollado por: Esneyder Jesús Ibarra Rosero
+// Ingeniero de Sistemas - Práctica profesional
+// ================================================================================
+
+import 'dart:async';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:registro_uci/common/providers/repository_providers.dart';
+import 'package:registro_uci/features/firmas/data/dto/create_firma_dto.dart';
+import 'package:registro_uci/features/firmas/domain/models/reporte_params.dart';
+import 'package:registro_uci/features/registros_diarios/data/abstract_repositories/registros_diarios_repository.dart';
+import 'package:registro_uci/features/registros_diarios/data/providers/registro_diario_provider.dart';
+
+// controller que maneja la accion de firmar un reporte
+class FirmarReporteController extends AsyncNotifier<void> {
+  late final IRegistrosDiariosRepository _repository =
+      ref.watch(registrosDiariosRepositoryProvider);
+
+  @override
+  FutureOr<void> build() {}
+
+  // ejecuta la firma del reporte e invalida el provider del registro diario
+  Future<void> firmarReporte(
+    String idIngreso,
+    String idRegistro,
+    String tipoFirma,
+    CreateFirmaDto firma,
+  ) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() =>
+        _repository.firmarReporte(idIngreso, idRegistro, tipoFirma, firma));
+    // switch tipoFirma
+    ref.invalidate(registroDiarioProvider(
+        ReporteParams(idIngreso: idIngreso, idRegistro: idRegistro)));
+  }
+}
+
+// provider del controller de firma de reporte
+final firmarReporteControllerProvider =
+    AsyncNotifierProvider<FirmarReporteController, void>(
+  () => FirmarReporteController(),
+);

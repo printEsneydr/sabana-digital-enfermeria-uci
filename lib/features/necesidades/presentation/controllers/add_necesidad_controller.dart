@@ -1,0 +1,45 @@
+// ================================================================================
+// SÁBANA DIGITAL DE ENFERMERÍA - UCI
+// Hospital Universitario Departamental de Nariño (HUDN)
+// Desarrollado por: Esneyder Jesús Ibarra Rosero
+// Ingeniero de Sistemas - Práctica profesional
+// ================================================================================
+
+import 'dart:async';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:registro_uci/common/providers/repository_providers.dart';
+import 'package:registro_uci/features/firmas/domain/models/reporte_params.dart';
+import 'package:registro_uci/features/necesidades/data/abstract_repositories/necesidades_repository.dart';
+import 'package:registro_uci/features/necesidades/data/dto/create_necesidad_dto.dart';
+import 'package:registro_uci/features/necesidades/data/providers/necesidades_de_registro_provider.dart';
+
+// controlador que maneja la logica de agregar una nueva necesidad a firestore
+class AddNecesidadToRegistroController extends AsyncNotifier<void> {
+  late final NecesidadesRepository _repository =
+      ref.watch(necesidadesRepositoryProvider);
+
+  @override
+  FutureOr<void> build() {}
+
+  // agrega una nueva necesidad a firestore e invalida el provider
+  Future<void> addNecesidadToRegistro(
+    String idIngreso,
+    String idRegistro,
+    CreateNecesidadDto dto,
+  ) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(
+        () => _repository.addNecesidadToRegistro(idIngreso, idRegistro, dto));
+    ref.invalidate(
+      necesidadesDeRegistroProvider(
+        ReporteParams(idIngreso: idIngreso, idRegistro: idRegistro),
+      ),
+    );
+  }
+}
+
+// provider del controlador de agregar necesidades
+final addNecesidadToRegistroControllerProvider =
+    AsyncNotifierProvider<AddNecesidadToRegistroController, void>(
+  () => AddNecesidadToRegistroController(),
+);

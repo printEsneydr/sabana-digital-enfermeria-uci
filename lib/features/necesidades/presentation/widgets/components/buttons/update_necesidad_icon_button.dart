@@ -1,0 +1,43 @@
+// ================================================================================
+// SÁBANA DIGITAL DE ENFERMERÍA - UCI
+// Hospital Universitario Departamental de Nariño (HUDN)
+// Desarrollado por: Esneyder Jesús Ibarra Rosero
+// Ingeniero de Sistemas - Práctica profesional
+// ================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:registro_uci/common/components/icon_buttons/edit_icon_button.dart';
+import 'package:registro_uci/features/firmas/domain/models/reporte_params.dart';
+import 'package:registro_uci/features/necesidades/domain/models/necesidad.dart';
+import 'package:registro_uci/features/necesidades/presentation/widgets/components/update_necesidad_form.dart';
+
+// boton icono que abre el dialogo para actualizar una necesidad
+class UpdateNecesidadIconButton extends ConsumerWidget {
+  final Necesidad necesidad;
+  final ReporteParams params;
+
+  // constructor que recibe la necesidad y los parametros del reporte
+  const UpdateNecesidadIconButton({
+    super.key,
+    required this.necesidad,
+    required this.params,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return EditIconButton(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            content: UpdateNecesidadForm(
+              necesidad: necesidad,
+              params: params,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

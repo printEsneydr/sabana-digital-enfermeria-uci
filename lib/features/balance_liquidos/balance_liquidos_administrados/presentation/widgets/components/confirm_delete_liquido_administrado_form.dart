@@ -1,0 +1,57 @@
+// ================================================================================
+// SÁBANA DIGITAL DE ENFERMERÍA - UCI
+// Hospital Universitario Departamental de Nariño (HUDN)
+// Desarrollado por: Esneyder Jesús Ibarra Rosero
+// Ingeniero de Sistemas - Práctica profesional
+// ================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:registro_uci/features/balance_liquidos/balance_liquidos_administrados/data/providers/liquidos_administrados_provider.dart';
+import 'package:registro_uci/features/balance_liquidos/balance_liquidos_administrados/presentation/widgets/components/buttons/confirm_delete_liquido_administrado_form_button.dart';
+
+// widget que muestra una confirmacion antes de eliminar un liquido administrado
+class ConfirmDeleteLiquidoAdministrado extends StatelessWidget {
+  const ConfirmDeleteLiquidoAdministrado({
+    super.key,
+    required this.idLiquidoAdministrado,
+    required this.params,
+  });
+
+  // id del liquido y parametros del balance para eliminar
+  final String idLiquidoAdministrado;
+  final LiquidosAdministradosParams params;
+  // construye la pantalla de confirmacion con el boton de eliminar
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Title
+          Text(
+            "Confirmar Eliminar Liquido Administrado",
+            style: Theme.of(context).textTheme.headlineLarge,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 20),
+
+          // Body
+          Text(
+            "¿Estás seguro de que deseas eliminar este liquido administrado?",
+            style: Theme.of(context).textTheme.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 30),
+
+          // Delete Button
+          DeleteLiquidoAdministradoFormButton(
+            params: params,
+            idLiquidoAdministrado: idLiquidoAdministrado,
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -1,0 +1,529 @@
+// ================================================================================
+// SÁBANA DIGITAL DE ENFERMERÍA - UCI
+// Hospital Universitario Departamental de Nariño (HUDN)
+// Desarrollado por: Esneyder Jesús Ibarra Rosero
+// Ingeniero de Sistemas - Práctica profesional
+// ================================================================================
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:registro_uci/features/monitorias_hemodinamicas/data/providers/monitoria_hemodinamica_provider.dart';
+
+// pantalla con formulario para crear o editar una monitoria hemodinamica
+class FormularioMonitoriaScreen extends ConsumerStatefulWidget {
+  // id del ingreso
+  final String idIngreso;
+  // id del registro diario
+  final String idRegistroDiario;
+  // hora inicial seleccionada por defecto
+  final int? horaInicial;
+  // si ya existe, id de la monitoria a editar
+  final String? idMonitoriaExistente;
+
+  const FormularioMonitoriaScreen({
+    super.key,
+    required this.idIngreso,
+    required this.idRegistroDiario,
+    this.horaInicial,
+    this.idMonitoriaExistente,
+  });
+
+  @override
+  FormularioMonitoriaScreenState createState() =>
+      FormularioMonitoriaScreenState();
+}
+
+// estado del formulario de monitoria hemodinamica
+class FormularioMonitoriaScreenState
+    extends ConsumerState<FormularioMonitoriaScreen> {
+  // hora seleccionada en el formulario
+  late int selectedHora;
+  int? pas,
+      pad,
+      fc,
+      fr,
+      pvc,
+      gc,
+      ic,
+      rvs,
+      irvs,
+      fio2,
+      pia,
+      ppa,
+      pic,
+      ppc,
+      glucometria,
+      insulina,
+      saturacion;
+  double? t;
+
+  final Map<String, bool> _expandedSections = {
+    'presion': false,
+    'vitales': false,
+    'oxigenacion': false,
+    'especiales': false,
+    'metabolicos': false,
+  };
+
+  final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
+
+  // inicializa la hora seleccionada con el valor recibido o 8 por defecto
+  @override
+  void initState() {
+    super.initState();
+    selectedHora = widget.horaInicial ?? 8;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.idMonitoriaExistente == null
+            ? 'Nueva Monitoría'
+            : 'Editar Monitoría'),
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 20),
+                          _buildSection(
+                            title: 'Presión Arterial',
+                            icon: Icons.monitor_heart_outlined,
+                            isExpanded: _expandedSections['presion']!,
+                            onExpand: (e) => setState(
+                                () => _expandedSections['presion'] = e),
+                            children: _buildPressureFields(),
+                          ),
+                          _buildSection(
+                            title: 'Signos Vitales',
+                            icon: Icons.favorite_border,
+                            isExpanded: _expandedSections['vitales']!,
+                            onExpand: (e) => setState(
+                                () => _expandedSections['vitales'] = e),
+                            children: _buildVitalSignsFields(),
+                          ),
+                          _buildSection(
+                            title: 'Oxigenación',
+                            icon: Icons.air,
+                            isExpanded: _expandedSections['oxigenacion']!,
+                            onExpand: (e) => setState(
+                                () => _expandedSections['oxigenacion'] = e),
+                            children: _buildOxygenationFields(),
+                          ),
+                          _buildSection(
+                            title: 'Presiones Especiales',
+                            icon: Icons.science_outlined,
+                            isExpanded: _expandedSections['especiales']!,
+                            onExpand: (e) => setState(
+                                () => _expandedSections['especiales'] = e),
+                            children: _buildSpecialPressures(),
+                          ),
+                          _buildSection(
+                            title: 'Datos Metabólicos',
+                            icon: Icons.bloodtype_outlined,
+                            isExpanded: _expandedSections['metabolicos']!,
+                            onExpand: (e) => setState(
+                                () => _expandedSections['metabolicos'] = e),
+                            children: _buildMetabolicFields(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  _buildActionButtons(), // Botones en la parte inferior
+                ],
+              ),
+            ),
+    );
+  }
+
+  // construye una seccion expandible con titulo e icono
+  Widget _buildSection({
+    required String title,
+    required IconData icon,
+    required bool isExpanded,
+    required Function(bool) onExpand,
+    required List<Widget> children,
+  }) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 2,
+      child: ExpansionTile(
+        leading: Icon(icon, color: Theme.of(context).primaryColor),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        initiallyExpanded: isExpanded,
+        onExpansionChanged: onExpand,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Column(children: children),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // campos para presion arterial sistolica y diastolica con calculo de PAM
+  List<Widget> _buildPressureFields() => [
+        Row(
+          children: [
+            Expanded(
+              child: _buildNumberField(
+                label: 'PAS (mmHg)',
+                value: pas,
+                onChanged: (v) => pas = v,
+                minValue: 0,
+                maxValue: 300,
+                isRequired: true,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: _buildNumberField(
+                label: 'PAD (mmHg)',
+                value: pad,
+                onChanged: (v) => pad = v,
+                minValue: 0,
+                maxValue: 200,
+                isRequired: true,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (pas != null && pad != null)
+          Text(
+            'PAM: ${((pas! + 2 * pad!) / 3).toStringAsFixed(1)} mmHg',
+            style:
+                TextStyle(fontSize: 16, color: Theme.of(context).primaryColor),
+          ),
+      ];
+
+  // campos para frecuencia cardiaca, respiratoria y temperatura
+  List<Widget> _buildVitalSignsFields() => [
+        _buildNumberField(
+          label: 'FC (ppm)',
+          value: fc,
+          onChanged: (v) => fc = v,
+          minValue: 0,
+          maxValue: 300,
+        ),
+        const SizedBox(height: 12),
+        _buildNumberField(
+          label: 'FR (rpm)',
+          value: fr,
+          onChanged: (v) => fr = v,
+          minValue: 0,
+          maxValue: 60,
+        ),
+        const SizedBox(height: 12),
+        _buildNumberField(
+          label: 'Temperatura (°C)',
+          value: t?.toInt(),
+          onChanged: (v) => t = v?.toDouble(),
+          minValue: 30,
+          maxValue: 45,
+          decimal: true,
+        ),
+      ];
+
+  // campos para fio2 y saturacion de oxigeno
+  List<Widget> _buildOxygenationFields() => [
+        _buildNumberField(
+          label: 'FiO₂ (%)',
+          value: fio2,
+          onChanged: (v) => fio2 = v,
+          minValue: 21,
+          maxValue: 100,
+        ),
+        const SizedBox(height: 12),
+        _buildNumberField(
+          label: 'Sat O₂ (%)',
+          value: saturacion,
+          onChanged: (v) => saturacion = v,
+          minValue: 0,
+          maxValue: 100,
+        ),
+      ];
+
+  // campos para presiones especiales: pvc, gc, ic, rvs, irvs, pia, ppa, pic, ppc
+  List<Widget> _buildSpecialPressures() => [
+        const SizedBox(height: 16),
+        const Text(
+          'Presiones Especiales',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 12),
+        _buildPressureRow(
+          left: _buildNumberField(
+            label: 'PVC (mmHg)',
+            value: pvc,
+            onChanged: (v) => pvc = v,
+            minValue: -10,
+            maxValue: 50,
+          ),
+          right: _buildNumberField(
+            label: 'GC (L/min)',
+            value: gc,
+            onChanged: (v) => gc = v,
+            minValue: 0,
+            maxValue: 20,
+          ),
+        ),
+        const SizedBox(height: 12),
+        _buildPressureRow(
+          left: _buildNumberField(
+            label: 'IC (L/min/m²)',
+            value: ic,
+            onChanged: (v) => ic = v,
+            minValue: 0,
+            maxValue: 10,
+          ),
+          right: _buildNumberField(
+            label: 'RVS (dyn·s/cm⁵)',
+            value: rvs,
+            onChanged: (v) => rvs = v,
+            minValue: 0,
+            maxValue: 3000,
+          ),
+        ),
+        const SizedBox(height: 12),
+        _buildPressureRow(
+          left: _buildNumberField(
+            label: 'IRVS (dyn·s/cm⁵/m²)',
+            value: irvs,
+            onChanged: (v) => irvs = v,
+            minValue: 0,
+            maxValue: 5000,
+          ),
+          right: _buildNumberField(
+            label: 'PIA/PPA (mmHg)',
+            value: pia,
+            onChanged: (v) => pia = v,
+            minValue: 0,
+            maxValue: 50,
+          ),
+        ),
+        const SizedBox(height: 12),
+        _buildPressureRow(
+          left: _buildNumberField(
+            label: 'PPA (mmHg)',
+            value: ppa,
+            onChanged: (v) => ppa = v,
+            minValue: 0,
+            maxValue: 300,
+          ),
+          right: _buildNumberField(
+            label: 'PIC/PPC (mmHg)',
+            value: pic,
+            onChanged: (v) => pic = v,
+            minValue: 0,
+            maxValue: 50,
+          ),
+        ),
+        const SizedBox(height: 12),
+        _buildNumberField(
+          label: 'PPC (mmHg)',
+          value: ppc,
+          onChanged: (v) => ppc = v,
+          minValue: 0,
+          maxValue: 150,
+        ),
+      ];
+
+  // fila con dos widgets uno al lado del otro
+  Widget _buildPressureRow({required Widget left, required Widget right}) {
+    return Row(
+      children: [
+        Expanded(child: left),
+        const SizedBox(width: 16),
+        Expanded(child: right),
+      ],
+    );
+  }
+
+  // campos para glucometria e insulina
+  List<Widget> _buildMetabolicFields() => [
+        Row(
+          children: [
+            Expanded(
+              child: _buildNumberField(
+                label: 'Glucemia (mg/dL)',
+                value: glucometria,
+                onChanged: (v) => glucometria = v,
+                minValue: 0,
+                maxValue: 1000,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: _buildNumberField(
+                label: 'Insulina (U)',
+                value: insulina,
+                onChanged: (v) => insulina = v,
+                minValue: 0,
+                maxValue: 100,
+              ),
+            ),
+          ],
+        ),
+      ];
+
+  // construye un campo de texto numerico con validacion de rango
+  Widget _buildNumberField({
+    required String label,
+    required int? value,
+    required Function(int?) onChanged,
+    int minValue = 0,
+    int maxValue = 999,
+    bool decimal = false,
+    bool isRequired = false,
+  }) {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+        suffixText: label.contains('°C') ? '°C' : null,
+      ),
+      keyboardType: TextInputType.numberWithOptions(decimal: decimal),
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(
+          decimal ? RegExp(r'[0-9.]') : RegExp(r'[0-9]'),
+        ),
+      ],
+      initialValue: value?.toString(),
+      onChanged: (v) => onChanged(v.isNotEmpty ? int.tryParse(v) : null),
+      validator: (value) {
+        if (isRequired && (value == null || value.isEmpty)) {
+          return 'Campo requerido';
+        }
+        if (value != null && value.isNotEmpty) {
+          final numValue =
+              decimal ? double.tryParse(value) : int.tryParse(value);
+          if (numValue == null) return 'Valor inválido';
+          if (numValue < minValue || numValue > maxValue) {
+            return 'Entre $minValue y $maxValue';
+          }
+        }
+        return null;
+      },
+    );
+  }
+
+  // botones de cancelar y guardar/crear en la parte inferior
+  Widget _buildActionButtons() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          OutlinedButton(
+            onPressed: _isLoading ? null : () => Navigator.pop(context),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+            child: const Text('Cancelar'),
+          ),
+          const SizedBox(width: 12),
+          ElevatedButton(
+            onPressed: _isLoading ? null : _guardarMonitoria,
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+            child: Text(widget.idMonitoriaExistente == null
+                ? 'Crear Registro'
+                : 'Guardar Cambios'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // guarda o actualiza la monitoria llamando al provider correspondiente
+  Future<void> _guardarMonitoria() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final pam =
+          pas != null && pad != null ? ((pas! + 2 * pad!) / 3).round() : null;
+
+      await ref.read(guardarMonitoriaHemodinamicaProvider(
+        ParametrosGuardarMonitoria(
+          idIngreso: widget.idIngreso,
+          idRegistroDiario: widget.idRegistroDiario,
+          idMonitoria: widget.idMonitoriaExistente,
+          hora: selectedHora,
+          pas: pas,
+          pad: pad,
+          pam: pam,
+          fc: fc,
+          fr: fr,
+          t: t,
+          pvc: pvc,
+          gc: gc,
+          ic: ic,
+          rvs: rvs,
+          irvs: irvs,
+          fio2: fio2,
+          pia: pia,
+          ppa: ppa,
+          pic: pic,
+          ppc: ppc,
+          glucometria: glucometria,
+          insulina: insulina,
+          saturacion: saturacion,
+        ),
+      ).future);
+
+      ref.invalidate(monitoriasHemodinamicasStreamProvider(
+        ParametrosMonitoriaHemodinamica(
+          idIngreso: widget.idIngreso,
+          idRegistroDiario: widget.idRegistroDiario,
+        ),
+      ));
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(widget.idMonitoriaExistente == null
+                ? 'Monitoría creada correctamente'
+                : 'Monitoría actualizada correctamente'),
+          ),
+        );
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al guardar: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+}
